@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_app_flutter/widgets/question_widget.dart';
 
@@ -10,12 +12,20 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   late List<Widget> answers;
+  late List<String> questions;
 
   @override
   void initState() {
     super.initState();
     answers = [];
-    setState(() {});
+    questions = [
+      'First',
+      'Second',
+      'Third',
+      'Forth',
+      'Fifth',
+      'Sixth',
+    ];
   }
 
   @override
@@ -27,7 +37,7 @@ class _QuizPageState extends State<QuizPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const QuestionWidget(),
+              questionText(),
               _answerButton('True', 1),
               _answerButton('False', 2),
               Expanded(
@@ -43,6 +53,11 @@ class _QuizPageState extends State<QuizPage> {
         ));
   }
 
+  String _changeQuestions() {
+    final generatadNumber = Random().nextInt(6);
+    return questions[generatadNumber];
+  }
+
   Widget _answerButton(String text, int choice) {
     return Expanded(
       flex: 1,
@@ -54,18 +69,19 @@ class _QuizPageState extends State<QuizPage> {
                     ? MaterialStatePropertyAll(Colors.green)
                     : MaterialStatePropertyAll(Colors.red)),
             onPressed: () {
+              _changeQuestions();
               setState(() {
                 (choice == 1)
                     ? answers.add(const Icon(
-                        Icons.check,
-                        size: 24,
-                        color: Colors.green,
-                      ))
+                  Icons.check,
+                  size: 24,
+                  color: Colors.green,
+                ))
                     : answers.add(const Icon(
-                        Icons.face,
-                        color: Colors.red,
-                        size: 24,
-                      ));
+                  Icons.face,
+                  color: Colors.red,
+                  size: 24,
+                ));
               });
             },
             child: Text(
@@ -74,5 +90,19 @@ class _QuizPageState extends State<QuizPage> {
             )),
       ),
     );
+  }
+
+  Widget questionText() {
+    return Expanded(
+        flex: 5,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Center(
+            child: Text(
+              _changeQuestions(),
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ));
   }
 }
