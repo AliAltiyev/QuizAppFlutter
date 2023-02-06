@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../data/question_data.dart';
 
@@ -11,9 +12,6 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   late List<Widget> answersIcons;
-
-  final data = QuestionsData.getQuestions();
-  int questionNumber = 0;
 
   @override
   void initState() {
@@ -57,35 +55,28 @@ class _QuizPageState extends State<QuizPage> {
                     ? const MaterialStatePropertyAll(Colors.green)
                     : const MaterialStatePropertyAll(Colors.red)),
             onPressed: () {
+              QuestionsData.nextQuestion();
+
               setState(() {
-                if (answer == true) {
-                  bool correctAnswer = data[questionNumber].answer;
-                  if (correctAnswer == true) {
-                    debugPrint('You are right!');
-                  } else {
-                    debugPrint('You are Wrong!');
-                  }
+                if (QuestionsData.isFinished() == true) {
+                  QuestionsData.reset();
+
+                  Alert(context: context, title: "Finish", desc: "Game is over")
+                      .show();
+                  QuestionsData.reset();
+                  answersIcons.clear();
                 } else {
-                  bool correctAnswer = data[questionNumber].answer;
-                  if (correctAnswer == false) {
-                    debugPrint('You are right!');
+                  if (answer == true && QuestionsData.getAnswer()) {
+                    answersIcons.add(const Icon(
+                      Icons.check,
+                      size: 24,
+                      color: Colors.green,
+                    ));
                   } else {
-                    debugPrint('You are Wrong!');
+                    answersIcons.add(
+                        const Icon(Icons.close, size: 24, color: Colors.red));
                   }
                 }
-
-                questionNumber < data.length - 1 ? questionNumber++ : null;
-                (choice == 1 )
-                    ? answersIcons.add(const Icon(
-                        Icons.check,
-                        size: 24,
-                        color: Colors.green,
-                      ))
-                    : answersIcons.add(const Icon(
-                        Icons.face,
-                        color: Colors.red,
-                        size: 24,
-                      ));
               });
             },
             child: Text(
@@ -100,13 +91,26 @@ class _QuizPageState extends State<QuizPage> {
     return Expanded(
         flex: 5,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Center(
-            child: Text(
-              data[questionNumber].question,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+          padding: const EdgeInsets.all(8.0),
+          child: Material(
+            color: Colors.white38,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            child: Card(
+              elevation: 10,
+              color: Colors.white38,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: Text(
+                    QuestionsData.getQuestionText(),
+                    style: const TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                ),
+              ),
             ),
           ),
         ));
   }
+
+  void checkUserAnswer() {}
 }
